@@ -1,24 +1,23 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
+use App\Models\Quotes;
 use Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Carbon;
 
 
 class UserController extends Controller
 {
     //
-    protected function authenticated(Request $request, $user)
-    {
-      $user->last_seen_at = Carbon::now()->format('Y-m-d H:i:s');
-      $user->save();
-    }
     public function index(Request $request){
         return view('login');
     }
     public function home(Request $request){
-        return view('home');
+        $this->GetQuotes($request);
+        $quotes = Quotes::orderBy("created_at","DESC")->limit(5)->get();
+        return view('home',['quotes' => $quotes]);
     }
 
     function checklogin(Request $request)
@@ -35,7 +34,6 @@ class UserController extends Controller
 
      if(Auth::attempt($user_data))
      {
-        $this->authenticated($request,$user_data);
          return redirect('/home');
      }
      else
@@ -45,6 +43,14 @@ class UserController extends Controller
 
     }
     public function GetQuotes(Request $request){
-
+        for($i=0;$i<5;$i++){
+            $response = Http::get('https://api.kanye.rest');
+            Quotes::create(['name'=>$response['quote']]);
+        }
+    }
+    function logout()
+    {
+     Auth::logout();
+     return redirect('login');
     }
 }

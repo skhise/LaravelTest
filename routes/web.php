@@ -16,6 +16,7 @@ use App\Http\Middleware\SessionTimeout;
 */
 
 Route::get('/', [UserController::class,'index']);
+Route::get('/login', [UserController::class,'index']);
 
 Route::middleware([SessionTimeout::class])->group(function(){
     Route::get('/home', [UserController::class,'home']);

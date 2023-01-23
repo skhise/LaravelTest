@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Quotes extends Authenticatable
 {
     use HasApiTokens, HasFactory;
 
@@ -17,4 +17,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
     ];
+    public function rules()
+{
+    return [ 
+        'name' => 'required|email|unique:quotes,'. $this->quotes
+         //here user is users/{user} from resource's route url
+    ];
+}
 }
