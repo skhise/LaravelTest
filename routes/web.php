@@ -19,3 +19,6 @@ Route::get('/', function () {
 Route::get('/home', function () {
     return view('home');
 });
+Route::post('checklogin', [UserController::class,'checklogin']);
+Route::get('successlogin', [UserController::class,'successlogin']);
+Route::get('logout', [UserController::class,'Logout']);
