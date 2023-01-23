@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\SessionTimeout;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,12 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('login');
+Route::get('/', [UserController::class,'index']);
+
+Route::middleware([SessionTimeout::class])->group(function(){
+    Route::get('/home', [UserController::class,'home']);
+    Route::post('checklogin', [UserController::class,'checklogin']);
+    Route::get('successlogin', [UserController::class,'successlogin']);
+    Route::get('logout', [UserController::class,'Logout']);
 });
-Route::get('/home', function () {
-    return view('home');
-});
-Route::post('checklogin', [UserController::class,'checklogin']);
-Route::get('successlogin', [UserController::class,'successlogin']);
-Route::get('logout', [UserController::class,'Logout']);
