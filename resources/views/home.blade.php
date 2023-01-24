@@ -40,11 +40,11 @@
        <tr>
        @endif
        @if(count($quotes) > 0)
-       @foreach($quotes as $quote)
+       @foreach($quotes as $key => $quote)
        <tr class="text-center">
-            <td>{{$quote->id}}</td> 
-            <td>{{$quote->name}}</td> 
-            <td>{{$quote->created_at}}</td> 
+            <td>{{$quote['id']}}</td> 
+            <td>{{$quote['name']}}</td> 
+            <td>{{$quote['created_at']}}</td> 
        <tr>
         @endforeach
        @endif

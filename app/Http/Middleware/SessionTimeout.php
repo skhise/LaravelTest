@@ -17,18 +17,20 @@ class SessionTimeout
      */
     public function handle($request, Closure $next)
     {
+
         if (!Auth::check()) {
+            
             return $next($request);
         }
+        
 
-        $user = Auth::guard()->user();
-
+        $user = Auth::user();
+       
         $now = Carbon::now();
-
+        
         $last_seen = Carbon::parse($user->last_seen_at);
-
+        
         $absence = $now->diffInMinutes($last_seen);
-
         if ($absence > config('session.lifetime')) {
 
             Auth::guard()->logout();

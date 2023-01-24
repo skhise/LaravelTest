@@ -6,7 +6,7 @@ use App\Models\Quotes;
 use Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
-
+use Cache;
 
 class UserController extends Controller
 {
@@ -15,8 +15,19 @@ class UserController extends Controller
         return view('login');
     }
     public function home(Request $request){
-        $this->GetQuotes($request);
-        $quotes = Quotes::orderBy("created_at","DESC")->limit(5)->get();
+        $now = Carbon::now();
+        $user = Auth::user();
+        $user->last_seen_at = $now->format('Y-m-d H:i:s');
+        $user->save();
+        $quotes = array();
+        if(Cache::has('quotes')){
+            $quotes=Cache::get('quotes');
+        } else {
+            $quotes = $this->GetQuotes($request);
+        }
+        //dd($quotes);
+        //$this->GetQuotes($request);
+       // $quotes = Quotes::orderBy("created_at","DESC")->limit(5)->get();
         return view('home',['quotes' => $quotes]);
     }
 
@@ -34,6 +45,10 @@ class UserController extends Controller
 
      if(Auth::attempt($user_data))
      {
+        $user = Auth::user();
+        $now = Carbon::now();
+        $user->last_seen_at = $now->format('Y-m-d H:i:s');
+        $user->save();
          return redirect('/home');
      }
      else
@@ -43,10 +58,18 @@ class UserController extends Controller
 
     }
     public function GetQuotes(Request $request){
+        $quotes = [];
         for($i=0;$i<5;$i++){
             $response = Http::get('https://api.kanye.rest');
-            Quotes::create(['name'=>$response['quote']]);
+            $now = Carbon::now();
+            $arr['id'] = $i+1;
+            $arr['name'] =$response['quote'];
+            $arr['created_at'] = $now->format('Y-m-d H:i:s');
+            array_push($quotes,$arr);
+            
         }
+        Cache::put('quotes',$quotes,now()->addMinutes(1));
+        return $quotes;
     }
     function logout()
     {
