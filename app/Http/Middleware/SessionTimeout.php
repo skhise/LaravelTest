@@ -22,8 +22,6 @@ class SessionTimeout
             
             return $next($request);
         }
-        
-
         $user = Auth::user();
        
         $now = Carbon::now();
@@ -32,7 +30,7 @@ class SessionTimeout
         
         $absence = $now->diffInMinutes($last_seen);
         if ($absence > config('session.lifetime')) {
-
+ 
             Auth::guard()->logout();
 
             $request->session()->invalidate();
